@@ -1,10 +1,9 @@
 [build]
 builder = "nixpacks"
-buildCommand = "cd backend && npm install"
+buildCommand = "cd backend && corepack enable && corepack prepare pnpm@latest --activate && pnpm install"
 
 [deploy]
-startCommand = "cd backend && npm start"
-restartPolicyType = "on_failure"
+startCommand = "cd backend && node server.js"
 
 [environments]
   [environments.production]
