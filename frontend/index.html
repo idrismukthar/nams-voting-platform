@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NAMS | Registration</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+
+  <body>
+    <section class="container">
+      <!-- Left Image Section -->
+      <div class="image-section">
+        <div class="image-wrapper">
+          <img src="images/gradient.png" alt="NAMS LASU banner background" />
+        </div>
+        <div class="content-container">
+          <h1 class="section-heading">
+            Nigerian Association of Microbiology Students
+            <span>LASU CHAPTER.</span>
+          </h1>
+          <p class="section-paragraph">Brought to you by The Claritas.</p>
+        </div>
+      </div>
+
+      <!-- Right Form Section -->
+      <div class="form-section">
+        <div class="form-wrapper">
+          <!-- Logos -->
+          <div class="logo-group">
+            <div class="logo-container">
+              <a href="#" class="logo-link">
+                <img src="images/nams-logo.jpg" alt="NAMS Logo" />
+              </a>
+            </div>
+            <div class="logo-container">
+              <a href="#" class="logo-link">
+                <img src="images/lasu-logo.png" alt="LASU Logo" />
+              </a>
+            </div>
+          </div>
+
+          <h2>Create Your Account 👋🏻</h2>
+          <p class="form-subtitle">NAMS LASU E-VOTING PLATFORM</p>
+
+          <form id="registration-form" class="vote-form" novalidate>
+            <div class="input-container">
+              <div class="form-group">
+                <label for="name">Full Name</label>
+                <input
+                  type="text"
+                  id="name"
+                  name="fullname"
+                  autocomplete="off"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="matric-no">Matriculation Number</label>
+                <input
+                  type="text"
+                  id="matric-no"
+                  name="matric"
+                  autocomplete="off"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="password">Password</label>
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  autocomplete="new-password"
+                  required
+                />
+              </div>
+            </div>
+
+            <!-- 🧠 Message Box for Error/Success Feedback -->
+            <div
+              id="form-message"
+              style="
+                display: none;
+                margin-bottom: 1rem;
+                font-weight: 500;
+                text-align: center;
+              "
+            ></div>
+
+            <button type="submit" class="login-btn">Register</button>
+
+            <div class="alt-action">
+              <span class="alt-text">Already have an account?</span>
+              <a href="login.html" class="register-link">Login</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <script src="js/script.js" defer></script>
+  </body>
+</html>

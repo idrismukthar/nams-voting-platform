@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NAMS | Ballot</title>
+    <link rel="stylesheet" href="css/ballot_style.css" />
+    <style>
+      /* Add these styles for the already voted modal */
+      .modal-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 1.5rem;
+        flex-wrap: wrap;
+      }
+
+      .view-results-btn {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .view-results-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+      }
+
+      .already-voted-message {
+        text-align: center;
+        padding: 2rem;
+        background: #f8f9fa;
+        border-radius: 15px;
+        margin: 2rem 0;
+      }
+
+      .already-voted-message h3 {
+        color: #28a745;
+        margin-bottom: 1rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Success Modal -->
+    <div id="successModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <img src="images/nams-logo.jpg" alt="NAMS Logo" class="modal-logo">
+        </div>
+        <div class="modal-body">
+          <h2>Thank You for Voting! 🎉</h2>
+          <p>Your vote has been successfully submitted and recorded.</p>
+          <p class="modal-note">Together, we're making NAMS LASU better!</p>
+          <button id="closeModalBtn" class="close-modal-btn">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Already Voted Modal -->
+    <div id="alreadyVotedModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <img src="images/nams-logo.jpg" alt="NAMS Logo" class="modal-logo">
+        </div>
+        <div class="modal-body">
+          <h2 style="color: #28a745;">You've Already Voted! ✅</h2>
+          <p>Thank you for participating in the 2025/2026 NAMS LASU elections.</p>
+          <p>Each student can only vote once to ensure fair elections.</p>
+          <p class="modal-note">Your vote has been recorded and counted.</p>
+          <div class="modal-actions">
+            <button id="closeAlreadyVotedBtn" class="close-modal-btn">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ballot-container">
+      <!-- Header -->
+      <header class="ballot-header">
+        <div class="logo-group">
+          <img src="images/nams-logo.jpg" alt="NAMS Logo" class="header-logo" />
+          <img src="images/lasu-logo.png" alt="LASU Logo" class="header-logo" />
+        </div>
+
+        <h2 id="welcome-user" class="welcome-text"></h2>
+
+        <h1>NAMS LASU E-VOTING PLATFORM</h1>
+        <p>Nigerian Association of Microbiology Students (LASU Chapter)</p>
+      </header>
+
+      <!-- Content -->
+      <main class="site-content">
+        <section class="candidates-section">
+          <h2 class="section-title">Meet the Candidates & Cast Your Vote</h2>
+
+          <div class="card-grid" id="candidates-grid">
+            <div class="loading-text">Loading candidates...</div>
+          </div>
+
+          <div class="submit-area">
+            <button id="submitVoteBtn" class="vote-btn">Submit Vote 🗳️</button>
+            <div id="vote-message" class="message-box"></div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- JavaScript Files -->
+    <script src="js/config.js"></script>
+    <script src="js/ballot_script.js"></script>
+  </body>
+</html>

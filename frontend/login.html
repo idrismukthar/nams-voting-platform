@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NAMS | Login</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+
+  <body>
+    <section class="container">
+      <!-- Left Section -->
+      <div class="image-section">
+        <div class="image-wrapper">
+          <img src="images/gradient.png" alt="NAMS LASU banner background" />
+        </div>
+
+        <div class="content-container">
+          <h1 class="section-heading">
+            Nigerian Association of Microbiology Students
+            <span>LASU CHAPTER.</span>
+          </h1>
+          <p class="section-paragraph">Brought to you by The Claritas.</p>
+        </div>
+      </div>
+
+      <!-- Right Section (Login Form) -->
+      <div class="form-section">
+        <div class="form-wrapper">
+          <div class="logo-container">
+            <a href="#" class="logo-link">
+              <img src="images/nams-logo.jpg" alt="NAMS Logo" />
+            </a>
+          </div>
+          <div class="logo-container">
+            <a href="#" class="logo-link">
+              <img src="images/lasu-logo.png" alt="LASU Logo" />
+            </a>
+          </div>
+
+          <h2>Welcome Back! 👋🏻</h2>
+          <p>NAMS LASU E-VOTING PLATFORM.</p>
+
+          <form id="loginForm" class="vote-form" novalidate>
+            <div class="input-container">
+              <div class="form-group">
+                <label for="matric">Matriculation Number</label>
+                <input type="text" id="matric" autocomplete="off" required />
+              </div>
+
+              <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" required />
+              </div>
+            </div>
+
+            <div id="loginMessage" style="margin-bottom: 1rem; font-weight: 500;"></div>
+
+            <button type="submit" class="login-btn">Proceed to Vote</button>
+
+            <div class="alt-action">
+              <span class="alt-text">Don’t have an account?</span>
+              <a href="index.html" class="register-link">Create an account</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <script src="js/login_script.js" defer></script>
+  </body>
+</html>
