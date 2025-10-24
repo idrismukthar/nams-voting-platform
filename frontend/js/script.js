@@ -94,12 +94,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const msgBox = document.getElementById("form-message");
   const submitBtn = form.querySelector("button[type='submit']");
 
-  const apiUrl = "https://nams-voting-platform.onrender.com/api/signup/";
+  // ✅ Updated backend base URL
+  const BASE_URL = "https://nams-voting-platform.onrender.com";
 
-  // 🔹 Utility function: Show message feedback
+  // 🔹 Utility: show message box feedback
   const showMessage = (message, type = "info") => {
     msgBox.textContent = message;
-    msgBox.className = `msg ${type}`; // 'msg success', 'msg error', etc.
+    msgBox.className = `msg ${type}`; // e.g. 'msg success', 'msg error'
     msgBox.style.display = "block";
   };
 
@@ -111,7 +112,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const matric_no = document.getElementById("matric-no").value.trim();
     const password = document.getElementById("password").value.trim();
 
-    msgBox.style.display = "none"; // Hide old messages
+    msgBox.style.display = "none"; // Hide previous messages
 
     // ✅ Client-side validation
     if (!full_name || !matric_no || !password) {
@@ -122,42 +123,63 @@ document.addEventListener("DOMContentLoaded", () => {
       return showMessage("⚠️ Password must be at least 6 characters.", "error");
     }
 
-    // Loading state
+    // 🌀 Loading state for UX
     submitBtn.disabled = true;
     submitBtn.textContent = "Registering...";
 
     try {
-      const response = await fetch(apiUrl, {
+      // 🔹 Step 1: Register voter
+      const signupRes = await fetch(`${BASE_URL}/api/voter/signup/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ full_name, matric_no, password }),
       });
 
-      const data = await response.json().catch(() => ({
+      const signupData = await signupRes.json().catch(() => ({
         error: "Unexpected server response.",
       }));
 
-      if (response.ok) {
-        // ✅ Success feedback
-        showMessage("✅ Registration successful!", "success");
+      if (signupRes.ok) {
+        showMessage("✅ Registration successful! Logging you in...", "success");
 
-        // Save user locally (optional)
-        localStorage.setItem(
-          "voter_user",
-          JSON.stringify({
-            full_name,
-            matric_no,
-          })
-        );
+        // 🔹 Step 2: Auto-authenticate using SimpleJWT endpoint
+        const loginRes = await fetch(`${BASE_URL}/api/token/`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            username: matric_no, // ✅ backend uses matric_no as username
+            password,
+          }),
+        });
 
-        // Redirect after 1.5 seconds
-        setTimeout(() => (window.location.href = "ballot.html"), 1500);
+        const loginData = await loginRes.json();
+
+        if (loginRes.ok) {
+          // ✅ Save tokens and user data to local storage
+          localStorage.setItem("access_token", loginData.access);
+          localStorage.setItem("refresh_token", loginData.refresh);
+          localStorage.setItem(
+            "voter_user",
+            JSON.stringify({ full_name, matric_no })
+          );
+
+          // ✅ Redirect to ballot page after successful login
+          setTimeout(() => {
+            window.location.href = "ballot.html";
+          }, 1500);
+        } else {
+          // ⚠️ If login failed but signup succeeded
+          showMessage(
+            "⚠️ Registered successfully, but login failed. Please log in manually.",
+            "error"
+          );
+        }
       } else {
-        // 💬 Handle backend validation feedback
-        if (data.matric_no) {
-          showMessage(`❌ ${data.matric_no.join(" ")}`, "error");
-        } else if (data.error) {
-          showMessage(`❌ ${data.error}`, "error");
+        // 💬 Handle signup errors from backend
+        if (signupData.matric_no) {
+          showMessage(`❌ ${signupData.matric_no.join(" ")}`, "error");
+        } else if (signupData.error) {
+          showMessage(`❌ ${signupData.error}`, "error");
         } else {
           showMessage("❌ Registration failed. Please try again.", "error");
         }
@@ -165,11 +187,11 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (err) {
       console.error("⚠️ Network Error:", err);
       showMessage(
-        "❌ Unable to connect to the server. Please ensure the server is running or check your internet.",
+        "❌ Unable to connect to the server. Please check your internet or server status.",
         "error"
       );
     } finally {
-      // Reset button state
+      // 🔹 Reset button state
       submitBtn.disabled = false;
       submitBtn.textContent = "Register";
     }
