@@ -129,7 +129,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       // 🔹 Step 1: Register voter
-      const signupRes = await fetch(`${BASE_URL}/api/voter/signup/`, {
+      const signupRes = await fetch(`${BASE_URL}/api/signup/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ full_name, matric_no, password }),
@@ -143,7 +143,7 @@ document.addEventListener("DOMContentLoaded", () => {
         showMessage("✅ Registration successful! Logging you in...", "success");
 
         // 🔹 Step 2: Auto-authenticate using SimpleJWT endpoint
-        const loginRes = await fetch(`${BASE_URL}/api/token/`, {
+        const loginRes = await fetch(`${BASE_URL}/api/login/`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
