@@ -94,7 +94,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const msgBox = document.getElementById("form-message");
   const submitBtn = form.querySelector("button[type='submit']");
 
-  const apiUrl = "https://notionridesbackend.onrender.com/api/voter/signup/";
+  const apiUrl = "https://nams-voting-platform.onrender.com/api/signup/";
 
   // 🔹 Utility function: Show message feedback
   const showMessage = (message, type = "info") => {
@@ -165,7 +165,7 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (err) {
       console.error("⚠️ Network Error:", err);
       showMessage(
-        "❌ Unable to connect to backend. Please ensure the server is running or check your internet.",
+        "❌ Unable to connect to the server. Please ensure the server is running or check your internet.",
         "error"
       );
     } finally {
