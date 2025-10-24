@@ -1,5 +1,5 @@
 // js/ballot.js
-document.addEventListener("DOMContentLoaded", async () => {
+/* document.addEventListener("DOMContentLoaded", async () => {
   // DOM Elements
   const welcomeEl = document.getElementById("welcome-user");
   const grid = document.getElementById("candidates-grid");
@@ -482,5 +482,257 @@ document.addEventListener("DOMContentLoaded", async () => {
   submitBtn.addEventListener("click", submitVote);
 
   // ==================== INITIALIZE ====================
+  loadCandidates();
+});
+ */
+
+
+
+
+// ✅ js/ballot.js (Clean & Restructured)
+document.addEventListener("DOMContentLoaded", async () => {
+  // 🔹 DOM Elements
+  const welcomeEl = document.getElementById("welcome-user");
+  const grid = document.getElementById("candidates-grid");
+  const submitBtn = document.getElementById("submitVoteBtn");
+  const msgBox = document.getElementById("vote-message");
+  const modal = document.getElementById("successModal");
+  const alreadyVotedModal = document.getElementById("alreadyVotedModal");
+  const closeModalBtn = document.getElementById("closeModalBtn");
+
+  const BASE_URL = "https://nams-voting-platform.onrender.com";
+
+  // ==================== AUTH CHECK ====================
+  const userData = localStorage.getItem("voter_user"); // 🔸 Changed from nams_user → matches registration.js
+  if (!userData) {
+    alert("⚠️ Please register or log in first!");
+    window.location.href = "login.html";
+    return;
+  }
+
+  const user = JSON.parse(userData);
+  const userFullName = user.full_name || "Student";
+  const userMatric = user.matric_no;
+
+  // ✅ Personalized Welcome Message
+  welcomeEl.textContent = `Welcome, ${userFullName}! 👋`;
+  welcomeEl.style.opacity = "1";
+
+  // ==================== CHECK IF USER ALREADY VOTED ====================
+  async function checkVoteStatus() {
+    try {
+      const response = await fetch(`${BASE_URL}/api/checkVote/${userMatric}`);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.hasVoted) {
+          showAlreadyVotedModal();
+          disableBallot();
+          return true;
+        }
+      }
+      return false;
+    } catch (error) {
+      console.error("❌ Error checking vote status:", error);
+      return false;
+    }
+  }
+
+  // ==================== MODAL HANDLERS ====================
+  function showModal() {
+    modal.classList.add("show");
+  }
+
+  function closeModal() {
+    modal.classList.remove("show");
+    setTimeout(() => {
+      window.location.href = "results.html";
+    }, 500);
+  }
+
+  function showAlreadyVotedModal() {
+    alreadyVotedModal.classList.add("show");
+  }
+
+  function closeAlreadyVotedModal() {
+    alreadyVotedModal.classList.remove("show");
+  }
+
+  function viewResults() {
+    closeAlreadyVotedModal();
+    window.location.href = "results.html";
+  }
+
+  // 🔹 Make modal functions accessible to HTML buttons
+  window.closeAlreadyVotedModal = closeAlreadyVotedModal;
+  window.viewResults = viewResults;
+
+  closeModalBtn.addEventListener("click", closeModal);
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) closeModal();
+  });
+
+  alreadyVotedModal.addEventListener("click", (e) => {
+    if (e.target === alreadyVotedModal) closeAlreadyVotedModal();
+  });
+
+  // ==================== DISABLE BALLOT ====================
+  function disableBallot() {
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Already Voted ✅";
+    submitBtn.style.background = "#6c757d";
+
+    document.querySelectorAll('input[type="radio"]').forEach((radio) => {
+      radio.disabled = true;
+    });
+
+    grid.innerHTML = `
+      <div class="already-voted-message">
+        <h3>Thank You for Voting! 🎉</h3>
+        <p>You have already cast your vote in this election.</p>
+        <p>Your participation helps shape the future of NAMS LASU.</p>
+        <button onclick="viewResults()" class="view-results-btn">View Live Results</button>
+      </div>
+    `;
+  }
+
+  // ==================== LOAD CANDIDATES ====================
+  async function loadCandidates() {
+    const hasVoted = await checkVoteStatus();
+    if (hasVoted) return;
+
+    try {
+      grid.innerHTML = '<div class="loading-text">Loading candidates...</div>';
+
+      const response = await fetch(`${BASE_URL}/api/candidates`);
+      if (!response.ok) throw new Error(`Server error: ${response.status}`);
+
+      const candidates = await response.json();
+      if (!candidates?.length) {
+        grid.innerHTML =
+          '<div class="no-candidates">No candidates available yet. Check back later.</div>';
+        submitBtn.disabled = true;
+        return;
+      }
+
+      displayCandidates(candidates);
+    } catch (error) {
+      console.error("❌ Error loading candidates:", error);
+      grid.innerHTML = `
+        <div class="error-message">
+          <p>❌ Failed to load candidates</p>
+          <p style="font-size: 0.9rem; margin-top: 0.5rem;">${error.message}</p>
+          <button onclick="loadCandidates()" class="retry-btn">Retry</button>
+        </div>
+      `;
+    }
+  }
+
+  // ==================== DISPLAY CANDIDATES ====================
+  function displayCandidates(candidates) {
+    const grouped = {};
+
+    candidates.forEach((candidate) => {
+      if (!grouped[candidate.position]) grouped[candidate.position] = [];
+      grouped[candidate.position].push(candidate);
+    });
+
+    let html = "";
+    for (const [position, positionCandidates] of Object.entries(grouped)) {
+      html += `
+        <div class="position-section">
+          <h3 class="position-title">${position.toUpperCase()}</h3>
+          <div class="candidates-row">
+      `;
+
+      positionCandidates.forEach((candidate) => {
+        html += `
+          <div class="candidate-card">
+            <img src="${BASE_URL}/uploads/${candidate.image}" 
+                 alt="${candidate.name}" 
+                 class="candidate-img"
+                 onerror="this.src='images/default-avatar.jpg'">
+            <p class="candidate-name">${candidate.name}</p>
+            <label class="vote-label">
+              <input type="radio" name="${position}" value="${candidate.id}">
+              <span class="radio-custom"></span>
+              Vote for ${candidate.name.split(" ")[0]}
+            </label>
+          </div>
+        `;
+      });
+
+      html += `</div></div>`;
+    }
+
+    grid.innerHTML = html;
+  }
+
+  // ==================== SUBMIT VOTE ====================
+  async function submitVote() {
+    const selectedRadios = document.querySelectorAll(
+      'input[type="radio"]:checked'
+    );
+    if (!selectedRadios.length) {
+      showMessage("⚠️ Please select at least one candidate.", "error");
+      return;
+    }
+
+    const votes = Array.from(selectedRadios).map((radio) => ({
+      candidate_id: parseInt(radio.value),
+      position: radio.name,
+    }));
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Submitting Vote...";
+    msgBox.style.display = "none";
+
+    try {
+      const response = await fetch(`${BASE_URL}/api/votes/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          matric: userMatric,
+          votes,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        showMessage("✅ Vote submitted successfully!", "success");
+        submitBtn.textContent = "Vote Submitted ✅";
+        submitBtn.disabled = true;
+
+        document.querySelectorAll('input[type="radio"]').forEach(
+          (radio) => (radio.disabled = true)
+        );
+
+        setTimeout(showModal, 1000);
+      } else {
+        showMessage(`❌ ${data.error || "Failed to submit vote"}`, "error");
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Submit Vote 🗳️";
+      }
+    } catch (error) {
+      console.error("❌ Vote submission error:", error);
+      showMessage("❌ Network error. Please check your connection.", "error");
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Submit Vote 🗳️";
+    }
+  }
+
+  // ==================== MESSAGE DISPLAY ====================
+  function showMessage(message, type) {
+    msgBox.textContent = message;
+    msgBox.className = `message-box ${type}`;
+    msgBox.style.display = "block";
+
+    if (type === "error") {
+      setTimeout(() => (msgBox.style.display = "none"), 5000);
+    }
+  }
+
+  // ==================== INITIALIZE ====================
+  submitBtn.addEventListener("click", submitVote);
   loadCandidates();
 });
